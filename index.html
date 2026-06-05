@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discounter Zen | 오늘 할 일</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-color: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success-color: #4ade80;
+            --warning-color: #fbbf24;
+            --danger-color: #fb7185;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, rgba(56,189,248,0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(129,140,248,0.15) 0px, transparent 50%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+            color: var(--text-primary); padding: 20px;
+        }
+        .glass-container {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 500px;
+            padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: fadeIn 0.6s ease-out;
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { font-size: 1.8rem; font-weight: 700; }
+        .highlight { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Top Banner */
+        .top-banner-box {
+            background: rgba(255,255,255,0.05); border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px;
+            text-align: center; margin-bottom: 20px;
+        }
+        .top-banner-box .banner-label { font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 8px; }
+        .banner-date-input { 
+            font-size: 1.6rem; font-weight: 700; color: var(--success-color); 
+            background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); 
+            border-radius: 12px; padding: 8px 16px; text-align: center;
+            color-scheme: dark; font-family: 'Outfit', sans-serif;
+            cursor: pointer; outline: none; width: 100%; max-width: 250px;
+        }
+        .banner-date-input:focus { border-color: var(--success-color); }
+
+        /* Note Box */
+        .note-box {
+            background: rgba(251,113,133,0.1); border: 1px solid rgba(251,113,133,0.25);
+            border-radius: 16px; padding: 14px 16px; margin-bottom: 20px;
+            font-size: 0.82rem; line-height: 1.6; color: #fda4af;
+        }
+        .note-box strong { color: var(--danger-color); display: block; margin-bottom: 4px; font-size: 0.9rem; }
+
+        /* Work Grid */
+        .work-grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+        .category-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 20px;
+        }
+        .card-header-main { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+        .card-header-main .icon { font-size: 1.8rem; }
+        .card-header-main .name { font-size: 1.1rem; font-weight: 700; }
+        .work-instruction { display: flex; flex-direction: column; gap: 10px; }
+        .work-item {
+            display: flex; flex-direction: row; justify-content: space-between;
+            align-items: center; padding: 14px 20px; border-radius: 14px;
+            background: rgba(255,255,255,0.03); border: 1px solid transparent; width: 100%;
+        }
+        .work-item .target-date { font-size: 1.7rem; font-weight: 700; }
+        .label-group { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .work-item .label { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .work-item .standard { font-size: 0.82rem; font-weight: 600; opacity: 0.55; }
+
+        /* Themes */
+        .discount-20 { background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.2); }
+        .discount-20 .target-date { color: var(--accent-color); }
+        .discount-40 { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.2); }
+        .discount-40 .target-date { color: var(--success-color); }
+        .discard { background: rgba(251,113,133,0.08); border-color: rgba(251,113,133,0.2); }
+        .discard .target-date { color: var(--danger-color); }
+
+        /* Reference Table */
+        .reference-section { margin-bottom: 28px; }
+        .section-title { font-size: 1rem; color: var(--text-secondary); margin-bottom: 10px; font-weight: 700; }
+        .table-wrapper { border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); overflow: hidden; }
+        .standard-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .standard-table th { background: rgba(255,255,255,0.06); color: var(--text-secondary); font-weight: 700; padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+        .standard-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 500; }
+        .standard-table tr:last-child td { border-bottom: none; }
+
+        /* Bottom Footer */
+        .info-footer { text-align: center; padding: 22px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--glass-border); }
+        .today-info .footer-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .today-info .footer-date { font-size: 1.5rem; font-weight: 700; color: var(--success-color); display: block; margin-top: 4px; }
+        .guide { font-size: 0.78rem; color: var(--text-secondary); margin-top: 8px; }
+        footer { text-align: center; margin-top: 20px; font-size: 0.7rem; color: var(--text-secondary); opacity: 0.35; }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>Discounter <span class="highlight">Zen</span></h1>
+        </header>
+
+        <!-- Top Big Date Banner -->
+        <div class="top-banner-box">
+            <label for="base-date" class="banner-label">오늘 기준일 (변경 가능)</label>
+            <input type="date" id="base-date" class="banner-date-input">
+        </div>
+
+        <!-- Special Instruction -->
+        <div class="note-box">
+            <strong>⚠️ 두채류 / 계란 폐기 특별 지시</strong>
+            두채류와 계란은 전부 당일 폐기 원칙. 단, 재고 많을 시 선임 보고 후 당일까지 판매 협의 가능.
+        </div>
+
+        <!-- Work Cards -->
+        <main class="work-grid">
+
+            <!-- 두채류 -->
+            <div class="category-card">
+                <div class="card-header-main"><span class="icon">🥬</span><span class="name">두채류</span></div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-tofu-disc">--/--</span>
+                        <div class="label-group"><span class="label">당일 폐기</span><span class="standard">(D-0)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-tofu-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(D-1)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-tofu-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(D-2)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 계란 -->
+            <div class="category-card">
+                <div class="card-header-main"><span class="icon">🥚</span><span class="name">계란</span></div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-egg-disc">--/--</span>
+                        <div class="label-group"><span class="label">당일 폐기</span><span class="standard">(D-0)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-egg-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(D-5)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-egg-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(D-6)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 구운란 -->
+            <div class="category-card">
+                <div class="card-header-main"><span class="icon">🥚</span><span class="name">구운란</span></div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-roasted-disc">--/--</span>
+                        <div class="label-group"><span class="label">당일 폐기</span><span class="standard">(D-0)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-roasted-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(D-2)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-roasted-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(D-3)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 스테비아 -->
+            <div class="category-card">
+                <div class="card-header-main" style="justify-content: space-between; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="icon">🍅</span>
+                        <span class="name">스테비아</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+                        <span style="color: var(--text-secondary);">제조일:</span>
+                        <input type="date" id="stevia-mfg-date" class="mfg-date-input" style="font-size: 0.85rem; padding: 4px 8px; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: var(--success-color); color-scheme: dark; font-family: inherit; cursor: pointer; outline: none;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px; font-size: 0.9rem; font-weight: 600; color: var(--warning-color); padding: 8px 12px; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); border-radius: 10px; display: flex; justify-content: space-between;">
+                    <span>소비기한 (당일포함 6일)</span>
+                    <span id="d-stevia-exp">--/--</span>
+                </div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-stevia-disc">--/--</span>
+                        <div class="label-group"><span class="label">폐기 작업</span><span class="standard">(소비 D+1)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-stevia-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(소비 D-2~0)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-stevia-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(소비 D-3)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수산 -->
+            <div class="category-card">
+                <div class="card-header-main"><span class="icon">🐟</span><span class="name">수산</span></div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-fish-disc">--/--</span>
+                        <div class="label-group"><span class="label">폐기 작업</span><span class="standard">(D+1)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-fish-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(D-0)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-fish-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(D-1)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 축산 -->
+            <div class="category-card">
+                <div class="card-header-main"><span class="icon">🥩</span><span class="name">축산</span></div>
+                <div class="work-instruction">
+                    <div class="work-item discard">
+                        <span class="target-date" id="d-meat-disc">--/--</span>
+                        <div class="label-group"><span class="label">폐기 작업</span><span class="standard">(D+1)</span></div>
+                    </div>
+                    <div class="work-item discount-40">
+                        <span class="target-date" id="d-meat-40">--/--</span>
+                        <div class="label-group"><span class="label">40% 부착</span><span class="standard">(D-1~0)</span></div>
+                    </div>
+                    <div class="work-item discount-20">
+                        <span class="target-date" id="d-meat-20">--/--</span>
+                        <div class="label-group"><span class="label">20% 부착</span><span class="standard">(D-2)</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Reference Table -->
+        <section class="reference-section">
+            <h2 class="section-title">할인 기준표 (Standard Rules)</h2>
+            <div class="table-wrapper">
+                <table class="standard-table">
+                    <thead>
+                        <tr><th>품목</th><th>20% 할인</th><th>40% 할인</th><th>폐기 기준</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>두채류</td><td>D-2</td><td>D-1</td><td>D-0 폐기</td></tr>
+                        <tr><td>계란</td><td>D-6</td><td>D-5</td><td>D-0 폐기</td></tr>
+                        <tr><td>구운란</td><td>D-3</td><td>D-2</td><td>D-0 폐기</td></tr>
+                        <tr><td>스테비아</td><td>D-3</td><td>D-2 ~ D-0</td><td>D+1 폐기</td></tr>
+                        <tr><td>수산</td><td>D-1</td><td>D-0</td><td>D+1 폐기</td></tr>
+                        <tr><td>축산</td><td>D-2</td><td>D-1 ~ D-0</td><td>D+1 폐기</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Bottom Date Banner -->
+        <section class="info-footer">
+            <div class="today-info">
+                <span class="footer-label">오늘 기준일</span>
+                <span class="footer-date" id="bottom-display">----</span>
+            </div>
+            <p class="guide">위 날짜의 상품을 찾아 해당 할인율을 적용하세요.</p>
+        </section>
+
+        <footer><p>&copy; 2026 Discounter Zen</p></footer>
+    </div>
+
+    <script>
+        // Self-contained script to allow copying index.html anywhere (e.g. Desktop)
+        (function() {
+            var baseDateInput = document.getElementById('base-date');
+            var steviaMfgInput = document.getElementById('stevia-mfg-date');
+
+            function getBaseDate() {
+                var val = baseDateInput.value;
+                if (!val) return new Date();
+                var parts = val.split('-');
+                return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            }
+
+            // Helper: get date string offset by N days from baseDate
+            function getDate(offset) {
+                var d = getBaseDate();
+                d.setDate(d.getDate() + offset);
+                return (d.getMonth() + 1) + '/' + d.getDate();
+            }
+
+            function getSteviaMfgDate() {
+                var val = steviaMfgInput.value;
+                if (!val) return getBaseDate();
+                var parts = val.split('-');
+                return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            }
+
+            function getSteviaDate(mfgDate, offset) {
+                var d = new Date(mfgDate.getTime());
+                d.setDate(d.getDate() + offset);
+                return (d.getMonth() + 1) + '/' + d.getDate();
+            }
+
+            // Set element text safely
+            function setText(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = val;
+            }
+
+            function renderStevia() {
+                var mfg = getSteviaMfgDate();
+                
+                // Expiry = MFG + 5 days (inclusive of MFG date)
+                var expDate = new Date(mfg.getTime());
+                expDate.setDate(expDate.getDate() + 5);
+                setText('d-stevia-exp', (expDate.getMonth() + 1) + '/' + expDate.getDate() + ' (' + ['일', '월', '화', '수', '목', '금', '토'][expDate.getDay()] + ')');
+
+                // D-3 (20%) = Exp - 3 days = MFG + 2 days
+                setText('d-stevia-20', getSteviaDate(mfg, 2));
+
+                // D-2 ~ 0 (40%) = Exp - 2 ~ Exp - 0 = MFG + 3 ~ MFG + 5
+                setText('d-stevia-40', getSteviaDate(mfg, 3) + '~' + getSteviaDate(mfg, 5));
+
+                // D+1 (discard) = Exp + 1 day = MFG + 6 days
+                setText('d-stevia-disc', getSteviaDate(mfg, 6));
+            }
+
+            function renderAll() {
+                var now = getBaseDate();
+                var dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                var dateStr = now.getFullYear() + '-'
+                    + String(now.getMonth() + 1).padStart(2, '0') + '-'
+                    + String(now.getDate()).padStart(2, '0')
+                    + ' (' + dayNames[now.getDay()] + ')';
+
+                // Render banners
+                setText('bottom-display', dateStr);
+
+                // Render all category dates
+                // 두채류: D-2(20%), D-1(40%), D-0(폐기)
+                setText('d-tofu-20', getDate(2));
+                setText('d-tofu-40', getDate(1));
+                setText('d-tofu-disc', getDate(0));
+
+                // 계란: D-6(20%), D-5(40%), D-0(폐기)
+                setText('d-egg-20', getDate(6));
+                setText('d-egg-40', getDate(5));
+                setText('d-egg-disc', getDate(0));
+
+                // 구운란: D-3(20%), D-2(40%), D-0(폐기)
+                setText('d-roasted-20', getDate(3));
+                setText('d-roasted-40', getDate(2));
+                setText('d-roasted-disc', getDate(0));
+
+                // 수산: D-1(20%), D-0(40%), D+1(폐기)
+                setText('d-fish-20', getDate(1));
+                setText('d-fish-40', getDate(0));
+                setText('d-fish-disc', getDate(-1));
+
+                // 축산: D-2(20%), D-0~D-1(40%), D+1(폐기)
+                setText('d-meat-20', getDate(2));
+                setText('d-meat-40', getDate(0) + '~' + getDate(1));
+                setText('d-meat-disc', getDate(-1));
+                
+                // Sync stevia mfg and render
+                steviaMfgInput.value = baseDateInput.value;
+                renderStevia();
+            }
+
+            // Init with today
+            var initNow = new Date();
+            var y = initNow.getFullYear();
+            var m = String(initNow.getMonth() + 1).padStart(2, '0');
+            var d = String(initNow.getDate()).padStart(2, '0');
+            var todayStr = y + '-' + m + '-' + d;
+            
+            baseDateInput.value = todayStr;
+            steviaMfgInput.value = todayStr;
+            
+            renderAll();
+
+            // Support both input and change for instant responsiveness
+            baseDateInput.addEventListener('change', renderAll);
+            baseDateInput.addEventListener('input', renderAll);
+
+            steviaMfgInput.addEventListener('change', renderStevia);
+            steviaMfgInput.addEventListener('input', renderStevia);
+
+            // Programmatically open date picker on click anywhere in the input field
+            baseDateInput.addEventListener('click', function() {
+                try {
+                    if (typeof this.showPicker === 'function') {
+                        this.showPicker();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+
+            steviaMfgInput.addEventListener('click', function() {
+                try {
+                    if (typeof this.showPicker === 'function') {
+                        this.showPicker();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
